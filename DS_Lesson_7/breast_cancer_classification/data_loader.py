@@ -5,10 +5,8 @@ class DataLoader:
     def __init__(self):
         self.data = None
 
+    #Загружает и обрабатывает данные из набора данных Breast Cancer Wisconsin.
     def load_data(self):
-        """
-        Загружает и обрабатывает данные из набора данных Breast Cancer Wisconsin.
-        """
         # Загружаем набор данных Breast Cancer Wisconsin
         cancer_data = load_breast_cancer()
         self.data = pd.DataFrame(cancer_data.data, columns=cancer_data.feature_names)
@@ -63,10 +61,8 @@ class DataLoader:
 
         return self.data
 
+    #Возвращает признаки (X) и целевую переменную (y) из загруженного набора данных.
     def get_features_and_target(self):
-        """
-        Возвращает признаки (X) и целевую переменную (y) из загруженного набора данных.
-        """
         if self.data is None:
             self.load_data()
         X = self.data.drop(columns=['Целевая переменная'])
