@@ -3,6 +3,8 @@ from model_trainer import ModelTrainer
 from model_evaluator import ModelEvaluator
 from sklearn.model_selection import train_test_split
 import warnings
+import sys
+import os
 
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
@@ -14,11 +16,25 @@ def log_message(message):
     errors_warnings.append(message)
     print(message)
 
-# Игнорирование предупреждений и перенаправление их в log_message
+# Переопределение функции showwarning для фильтрации предупреждений
 def custom_warning_handler(message, category, filename, lineno, file=None, line=None):
     log_message(f"Предупреждение: {message} в файле {filename}, строка {lineno}")
 
 warnings.showwarning = custom_warning_handler
+
+# Переопределение стандартного вывода для фильтрации информационных сообщений
+class FilteredStream:
+    def __init__(self, stream):
+        self.stream = stream
+
+    def write(self, message):
+        if "Warning" not in message:
+            self.stream.write(message)
+
+    def flush(self):
+        self.stream.flush()
+
+sys.stdout = FilteredStream(sys.stdout)
 
 try:
     # Шаг 1: Загрузка данных
@@ -75,4 +91,4 @@ except Exception as e:
 if errors_warnings:
     print("\nСписок всех предупреждений и ошибок:")
     for message in errors_warnings:
-        print(message)
+        print(message)	

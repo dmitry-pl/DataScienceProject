@@ -6,10 +6,8 @@ import matplotlib.pyplot as plt
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
 
+#Функция для добавления сообщений об ошибках и предупреждениях в список.
 def log_message(message):
-    """
-    Функция для добавления сообщений об ошибках и предупреждениях в список.
-    """
     errors_warnings.append(message)
     print(message)
 
@@ -20,10 +18,8 @@ class ModelEvaluator:
         self.y_test = y_test
         self.results = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'ROC AUC'])
 
+    #Оценивает модели по различным метрикам и строит матрицы истинности.
     def evaluate_models(self):
-        """
-        Оценивает модели по различным метрикам и строит матрицы истинности.
-        """
         results_list = []
         for model_name, model in self.models.items():
             try:
@@ -48,10 +44,8 @@ class ModelEvaluator:
         self.results = pd.concat([self.results, pd.DataFrame(results_list)], ignore_index=True)
         return self.results
 
+    #Строит матрицу истинности для заданной модели и предсказанных значений.
     def plot_confusion_matrix(self, model_name, y_pred):
-        """
-        Строит матрицу истинности для заданной модели и предсказанных значений.
-        """
         try:
             cm = confusion_matrix(self.y_test, y_pred)
             plt.figure(figsize=(6, 4))
@@ -63,10 +57,8 @@ class ModelEvaluator:
         except Exception as e:
             log_message(f"Ошибка при построении матрицы истинности для модели {model_name}: {e}")
 
+    #Возвращает лучшую модель на основе метрики ROC AUC.
     def get_best_model(self):
-        """
-        Возвращает лучшую модель на основе метрики ROC AUC.
-        """
         try:
             best_model = self.results.loc[self.results['ROC AUC'].idxmax()]
             return best_model

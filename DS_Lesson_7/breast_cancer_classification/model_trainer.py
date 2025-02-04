@@ -9,22 +9,20 @@ from lightgbm import LGBMClassifier
 from xgboost import XGBClassifier
 from sklearn.dummy import DummyClassifier
 from sklearn.model_selection import GridSearchCV
+#import os
+#import sys
 
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
 
+#Функция для добавления сообщений об ошибках и предупреждениях в список.
 def log_message(message):
-    """
-    Функция для добавления сообщений об ошибках и предупреждениях в список.
-    """
     errors_warnings.append(message)
     print(message)
 
 class ModelTrainer:
     def __init__(self):
-        """
-        Инициализация классификаторов и их гиперпараметров.
-        """
+        #Инициализация классификаторов и их гиперпараметров.
         self.models = {
             'Gradient Boosting': GradientBoostingClassifier(),
             'CatBoost': CatBoostClassifier(verbose=0),
@@ -55,12 +53,11 @@ class ModelTrainer:
         self.fitted_models = {}
         self.training_times = {}
 
+    #Обучение одной модели с использованием GridSearchCV и измерение времени.
     def train_single_model(self, model_name, model, X, y):
-        """
-        Обучение одной модели с использованием GridSearchCV и измерение времени.
-        """
         try:
             print(f"Начало обучения {model_name}...")
+
             start_time = time.time()
             param_grid = self.param_grids.get(model_name, {})
             grid_search = GridSearchCV(model, param_grid, cv=5, scoring='roc_auc')
@@ -72,25 +69,30 @@ class ModelTrainer:
             self.fitted_models[model_name] = grid_search.best_estimator_
             self.training_times[model_name] = training_time
             print(f"Обучение {model_name} завершено. Время: {training_time:.2f} секунд.")
+
         except Exception as e:
             log_message(f"Ошибка при обучении модели {model_name}: {e}")
 
+    #Обучение всех моделей последовательно.
     def train_models(self, X, y):
-        """
-        Обучение всех моделей последовательно.
-        """
         for model_name, model in self.models.items():
             self.train_single_model(model_name, model, X, y)
         return self.fitted_models
 
+        """
+        Обучение всех моделей в параллельных потоках.
+        num_cores = multiprocessing.cpu_count()
+        print(f"Количество доступных ядер: {num_cores}")
+        Parallel(n_jobs=num_cores)(delayed(self.train_single_model)(model_name, model, X, y)
+        for model_name, model in self.models.items())
+        print(f"Количество потоков: {num_cores}")
+        return self.fitted_models
+        """
+
+    #Возвращает лучшие гиперпараметры для каждой модели.
     def get_best_params(self):
-        """
-        Возвращает лучшие гиперпараметры для каждой модели.
-        """
         return self.best_params
-    
+
+    #Возвращает время, затраченное на обучение каждой модели.
     def get_training_times(self):
-        """
-        Возвращает время, затраченное на обучение каждой модели.
-        """
-        return self.training_times
+        return self.training_times    
