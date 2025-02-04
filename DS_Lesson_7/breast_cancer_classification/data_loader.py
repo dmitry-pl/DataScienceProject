@@ -1,3 +1,4 @@
+# Класс для загрузки и предварительной обработки данных.
 import pandas as pd
 from sklearn.datasets import load_breast_cancer
 
@@ -5,7 +6,7 @@ class DataLoader:
     def __init__(self):
         self.data = None
 
-    #Загружает и обрабатывает данные из набора данных Breast Cancer Wisconsin.
+    # Загружает и обрабатывает данные из набора данных Breast Cancer Wisconsin.
     def load_data(self):
         # Загружаем набор данных Breast Cancer Wisconsin
         cancer_data = load_breast_cancer()
@@ -61,7 +62,7 @@ class DataLoader:
 
         return self.data
 
-    #Возвращает признаки (X) и целевую переменную (y) из загруженного набора данных.
+    # Возвращает признаки (X) и целевую переменную (y) из загруженного набора данных.
     def get_features_and_target(self):
         if self.data is None:
             self.load_data()

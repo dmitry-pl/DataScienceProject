@@ -1,3 +1,4 @@
+# Класс для оценки моделей и вывода матриц истинности.
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, confusion_matrix
 import pandas as pd
 import seaborn as sns
@@ -6,7 +7,7 @@ import matplotlib.pyplot as plt
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
 
-#Функция для добавления сообщений об ошибках и предупреждениях в список.
+# Функция для добавления сообщений об ошибках и предупреждениях в список.
 def log_message(message):
     errors_warnings.append(message)
     print(message)
@@ -18,7 +19,7 @@ class ModelEvaluator:
         self.y_test = y_test
         self.results = pd.DataFrame(columns=['Model', 'Accuracy', 'Precision', 'Recall', 'F1 Score', 'ROC AUC'])
 
-    #Оценивает модели по различным метрикам и строит матрицы истинности.
+    # Оценивает модели по различным метрикам и строит матрицы истинности.
     def evaluate_models(self):
         results_list = []
         for model_name, model in self.models.items():
@@ -44,7 +45,7 @@ class ModelEvaluator:
         self.results = pd.concat([self.results, pd.DataFrame(results_list)], ignore_index=True)
         return self.results
 
-    #Строит матрицу истинности для заданной модели и предсказанных значений.
+    # Строит матрицу истинности для заданной модели и предсказанных значений.
     def plot_confusion_matrix(self, model_name, y_pred):
         try:
             cm = confusion_matrix(self.y_test, y_pred)
@@ -57,7 +58,7 @@ class ModelEvaluator:
         except Exception as e:
             log_message(f"Ошибка при построении матрицы истинности для модели {model_name}: {e}")
 
-    #Возвращает лучшую модель на основе метрики ROC AUC.
+    # Возвращает лучшую модель на основе метрики ROC AUC.
     def get_best_model(self):
         try:
             best_model = self.results.loc[self.results['ROC AUC'].idxmax()]

@@ -1,3 +1,4 @@
+# Класс для обучения моделей и измерения времени обучения.
 import time
 from sklearn.ensemble import GradientBoostingClassifier, AdaBoostClassifier, ExtraTreesClassifier
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
@@ -15,14 +16,14 @@ from sklearn.model_selection import GridSearchCV
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
 
-#Функция для добавления сообщений об ошибках и предупреждениях в список.
+# Функция для добавления сообщений об ошибках и предупреждениях в список.
 def log_message(message):
     errors_warnings.append(message)
     print(message)
 
 class ModelTrainer:
     def __init__(self):
-        #Инициализация классификаторов и их гиперпараметров.
+        # Инициализация классификаторов и их гиперпараметров.
         self.models = {
             'Gradient Boosting': GradientBoostingClassifier(),
             'CatBoost': CatBoostClassifier(verbose=0),
@@ -53,7 +54,7 @@ class ModelTrainer:
         self.fitted_models = {}
         self.training_times = {}
 
-    #Обучение одной модели с использованием GridSearchCV и измерение времени.
+    # Обучение одной модели с использованием GridSearchCV и измерение времени.
     def train_single_model(self, model_name, model, X, y):
         try:
             print(f"Начало обучения {model_name}...")
@@ -73,7 +74,7 @@ class ModelTrainer:
         except Exception as e:
             log_message(f"Ошибка при обучении модели {model_name}: {e}")
 
-    #Обучение всех моделей последовательно.
+    # Обучение всех моделей последовательно.
     def train_models(self, X, y):
         for model_name, model in self.models.items():
             self.train_single_model(model_name, model, X, y)
@@ -89,10 +90,10 @@ class ModelTrainer:
         return self.fitted_models
         """
 
-    #Возвращает лучшие гиперпараметры для каждой модели.
+    # Возвращает лучшие гиперпараметры для каждой модели.
     def get_best_params(self):
         return self.best_params
 
-    #Возвращает время, затраченное на обучение каждой модели.
+    # Возвращает время, затраченное на обучение каждой модели.
     def get_training_times(self):
         return self.training_times    

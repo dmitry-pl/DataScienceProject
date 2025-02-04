@@ -1,3 +1,4 @@
+# Основной файл для запуска программы и обработки исключений.
 from data_loader import DataLoader
 from model_trainer import ModelTrainer
 from model_evaluator import ModelEvaluator
@@ -9,10 +10,8 @@ import os
 # Список для сбора всех предупреждений и ошибок
 errors_warnings = []
 
+# Функция для добавления сообщений об ошибках и предупреждениях в список.
 def log_message(message):
-    """
-    Функция для добавления сообщений об ошибках и предупреждениях в список.
-    """
     errors_warnings.append(message)
     print(message)
 
