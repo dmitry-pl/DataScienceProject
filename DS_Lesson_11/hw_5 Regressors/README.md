@@ -11,7 +11,7 @@
 - **main.py**: Главный файл проекта.
 
 ## Результат выполнения:
-                               MAE       MSE      RMSE        R2      MAPE
+                                MAE       MSE      RMSE        R2      MAPE
 Linear Regression         0.533200  0.555892  0.745581  0.575788  0.319522   
 Random Forest             0.326753  0.253816  0.503802  0.806307  0.188365   
 Support Vector Regressor  0.377445  0.323697  0.568944  0.752980  0.205111   

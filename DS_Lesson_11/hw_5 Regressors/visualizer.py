@@ -8,10 +8,8 @@ class Visualizer:
         self.y_preds = y_preds
         self.y_test = y_test
 
+    # Визуализирует метрики всех моделей.
     def plot_metrics(self):
-        """
-        Визуализирует метрики всех моделей.
-        """
         results_df = pd.DataFrame(self.results).T
         plt.figure(figsize=(18, 12))
 
@@ -21,7 +19,7 @@ class Visualizer:
         plt.title('RMSE of Different Regressors')
         plt.xticks(rotation=45)
 
-    # R2
+        # R2
         plt.subplot(3, 3, 2)
         sns.barplot(x=results_df.index, y='R2', data=results_df)
         plt.title('R2 Score of Different Regressors')
@@ -48,10 +46,8 @@ class Visualizer:
         plt.tight_layout()
         plt.show()
 
+    # Визуализирует истинные и предсказанные значения для каждой модели.
     def plot_predictions(self):
-        """
-        Визуализирует истинные и предсказанные значения для каждой модели.
-        """
         n_models = len(self.y_preds)
         n_cols = 3
         n_rows = (n_models + n_cols - 1) // n_cols  # Расчет количества строк

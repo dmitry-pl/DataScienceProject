@@ -9,10 +9,8 @@ class ModelTrainer:
         self.results = {}
         self.y_preds = {}
 
+    # Обучает и оценивает модель, возвращает метрики и предсказания.
     def evaluate_model(self, model, X_train, y_train, X_test, y_test):
-        """
-        Обучает и оценивает модель, возвращает метрики и предсказания.
-        """
         start_time = time.time()
         model.fit(X_train, y_train)
         end_time = time.time()
@@ -26,10 +24,8 @@ class ModelTrainer:
         elapsed_time = end_time - start_time
         return mae, mse, rmse, r2, mape, medae, elapsed_time, y_pred
 
+    # Обучает и оценивает все модели с использованием GridSearchCV и кросс-валидации.
     def train_and_evaluate(self, X_train, y_train, X_test, y_test):
-        """
-        Обучает и оценивает все модели с использованием GridSearchCV и кросс-валидации.
-        """
         kfold = KFold(n_splits=5, shuffle=True, random_state=42)
         for name, (model, params) in self.models.items():
             grid_search = GridSearchCV(model, params, cv=kfold, scoring='r2')
