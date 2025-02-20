@@ -54,13 +54,20 @@ X_test = scaler.transform(X_test)
 print(pd.DataFrame(X_train, columns=data.columns[:-1]).head())
 
 
+from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
-import seaborn as sns
-import matplotlib.pyplot as plt
+
+# Задание параметров для Grid Search
+param_grid = {
+    'Logistic Regression': {'C': [0.1, 1, 10]},
+    'Random Forest': {'n_estimators': [50, 100, 200], 'max_depth': [None, 10, 20]},
+    'Gradient Boosting': {'n_estimators': [50, 100, 200], 'learning_rate': [0.01, 0.1, 0.5]},
+    'Support Vector Machine': {'C': [0.1, 1, 10], 'kernel': ['linear', 'rbf']},
+    'K-Neighbors Classifier': {'n_neighbors': [3, 5, 7]}
+}
 
 # Инициализация моделей
 classifiers = {
@@ -71,8 +78,25 @@ classifiers = {
     'K-Neighbors Classifier': KNeighborsClassifier()
 }
 
-# Обучение и оценка моделей
+best_estimators = {}
+
+# Оптимизация гиперпараметров с помощью Grid Search
 for name, clf in classifiers.items():
+    grid_search = GridSearchCV(clf, param_grid[name], cv=5, scoring='accuracy', n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+    best_estimators[name] = grid_search.best_estimator_
+    print(f"{name} best parameters: {grid_search.best_params_}")
+    print(f"{name} best score: {grid_search.best_score_:.4f}")
+
+
+### 3. Обучение и оценка моделей
+
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+# Обучение и оценка моделей
+for name, clf in best_estimators.items():
     clf.fit(X_train, y_train)
     y_pred = clf.predict(X_test)
     accuracy = accuracy_score(y_test, y_pred)
@@ -94,21 +118,18 @@ for name, clf in classifiers.items():
             if i == j:
                 print(f"True Positive (TP) for class {i}: {conf_matrix[i, j]} - correctly predicted positives for class {i}")
             else:
-                print(f"False Negative (FN) for class {i}, predicted as class {j}: {conf_matrix[i, j]} - incorrectly predicted as class {j}")
+                print(f"False Negative (FN) for class {i}, predicted as class {j}: {conf_matrix[i, j]} - incorrectly predicted as class {j}")    
 
-
-
-### 3. Создание ансамбля моделей
 
 from sklearn.ensemble import VotingClassifier
 
 # Создание ансамбля моделей
 ensemble_clf = VotingClassifier(estimators=[
-    ('log_reg', classifiers['Logistic Regression']),
-    ('rf', classifiers['Random Forest']),
-    ('gb', classifiers['Gradient Boosting']),
-    ('svm', classifiers['Support Vector Machine']),
-    ('knn', classifiers['K-Neighbors Classifier'])
+    ('log_reg', best_estimators['Logistic Regression']),
+    ('rf', best_estimators['Random Forest']),
+    ('gb', best_estimators['Gradient Boosting']),
+    ('svm', best_estimators['Support Vector Machine']),
+    ('knn', best_estimators['K-Neighbors Classifier'])
 ], voting='hard')
 
 # Обучение ансамбля моделей
@@ -120,23 +141,27 @@ print(classification_report(y_test, ensemble_y_pred))
 
 # Вывод матрицы истинности для ансамбля моделей с пояснениями
 conf_matrix = confusion_matrix(y_test, ensemble_y_pred)
-plt.figure(figsize=(8, 6))
-sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=['No Disease', 'Disease'], yticklabels=['No Disease', 'Disease'])
+plt.figure(figsize=(10, 8))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues', xticklabels=range(5), yticklabels=range(5))
 plt.title('Confusion Matrix for Ensemble Model')
 plt.xlabel('Predicted')
 plt.ylabel('Actual')
 plt.show()
 
 print("Confusion Matrix Explanation:")
-print(f"True Negative (TN): {conf_matrix[0, 0]} - correctly predicted negatives (реально здоровые и предсказаны как здоровые)")
-print(f"False Positive (FP): {conf_matrix[0, 1]} - incorrectly predicted as positive (реально здоровые, но предсказаны как больные)")
-print(f"False Negative (FN): {conf_matrix[1, 0]} - incorrectly predicted as negative (реально больные, но предсказаны как здоровые)")
-print(f"True Positive (TP): {conf_matrix[1, 1]} - correctly predicted positives (реально больные и предсказаны как больные)")    
+for i in range(conf_matrix.shape[0]):
+    for j in range(conf_matrix.shape[1]):
+        if i == j:
+            print(f"True Positive (TP) for class {i}: {conf_matrix[i, j]} - correctly predicted positives for class {i}")
+        else:
+            print(f"False Negative (FN) for class {i}, predicted as class {j}: {conf_matrix[i, j]} - incorrectly predicted as class {j}")                
 
 
 from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.svm import OneClassSVM
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Isolation Forest
 iso_forest = IsolationForest(contamination=0.1, random_state=42)
@@ -155,18 +180,20 @@ print(f"Isolation Forest Anomalies: {iso_forest_anomalies}")
 print(f"Local Outlier Factor Anomalies: {lof_anomalies}")
 print(f"OneClass SVM Anomalies: {one_class_svm_anomalies}")
 
+# Визуализация результатов аномалий
+def plot_anomalies(X, anomalies, title):
+    plt.figure(figsize=(10, 6))
+    plt.scatter(X.iloc[:, 0], X.iloc[:, 1], c=anomalies, cmap='viridis', marker='.')
+    plt.title(title)
+    plt.xlabel('Feature 1')
+    plt.ylabel('Feature 2')
+    plt.show()
 
+# Визуализация аномалий для Isolation Forest
+plot_anomalies(pd.DataFrame(X), iso_forest_anomalies, 'Isolation Forest Anomalies')
 
+# Визуализация аномалий для Local Outlier Factor
+plot_anomalies(pd.DataFrame(X), lof_anomalies, 'Local Outlier Factor Anomalies')
 
-# Визуализация ошибок прогнозирования
-
-# Logistic Regression
-log_reg_clf = classifiers['Logistic Regression']
-log_reg_y_pred = log_reg_clf.predict(X_test)
-
-plt.figure(figsize=(10, 6))
-sns.scatterplot(x=y_test, y=log_reg_y_pred)
-plt.title('Logistic Regression Predictions')
-plt.xlabel('True Values')
-plt.ylabel('Predicted Values')
-plt.show()
+# Визуализация аномалий для OneClass SVM
+plot_anomalies(pd.DataFrame(X), one_class_svm_anomalies, 'OneClass SVM Anomalies')            
