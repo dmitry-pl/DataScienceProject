@@ -1,14 +1,3 @@
-1. Структура проекта
-project/
-│
-├── README.md
-├── requirements.txt
-├── main.py
-├── data_preprocessing.py
-├── classification.py
-├── clustering.py
-└── anomaly_detection.py
-
 # Анализ и Классификация Данных о Сердечно-Сосудистых Заболеваниях
 
 ## Описание Проекта
@@ -36,6 +25,9 @@ project/
 - Балансировка классов с использованием SMOTE
 - Полиномиальные признаки
 - Масштабирование данных
+
+## Корреляционная матрица
+![ImageAlt](PNG/1_Корреляционная матрица.png)
 
 ## Методы
 ### Классификация
@@ -69,21 +61,21 @@ project/
 - CatBoost: 0.8862
 - Ансамблевое Моделирование: 0.85
 
-### Матрица Смешения
-![Матрица Смешения для Ансамбля](9_Матрица_Ensemble_Model.png)
+### Матрица_Ensemble_Model
+![Матрица Смешения для Ансамбля](PNG/9_Матрица_Ensemble_Model.png)
 
 ### Сегментация
-![Сегментация KMeans](path_to_kmeans_plot.png)
+![Сегментация KMeans](PNG/10_Кластеры_KMeans.png)
 
 ### Обнаружение Аномалий
 #### Isolation Forest
-![Isolation Forest](path_to_isolation_forest_plot.png)
+![Isolation Forest](PNG/11_Аномалии_Isolation_Forest.png)
 
 #### Local Outlier Factor
-![Local Outlier Factor](path_to_lof_plot.png)
+![Local Outlier Factor](PNG/12_Аномалии_Local_Outlier_Factor.png)
 
 #### One-Class SVM
-![One-Class SVM](path_to_one_class_svm_plot.png)
+![One-Class SVM](PNG/13_Аномалии_OneClass_SVM.png)
 
 ## Выводы
 В ходе проекта мы использовали различные методы машинного обучения для анализа и классификации данных о сердечно-сосудистых заболеваниях. Наилучшие результаты показала модель CatBoost с точностью 0.8862. Методы обнаружения аномалий помогли выявить аномальные данные, которые могут требовать дополнительного внимания.
